@@ -17,6 +17,10 @@ ray_at :: proc(r: Ray, t: f32) -> Point3 {
 }
 
 ray_color :: proc(r: Ray) -> Color {
+    if hit_sphere(Point3{0,0,-1}, 0.5, r) {
+        return Color{1,0,0}
+    }
+
     unit_direction := la.vector_normalize(r.direction)
     a := 0.5*(unit_direction.y + 1.0)
     return (1.0-a)*Color{1.0, 1.0, 1.0} + a*Color{0.5, 0.7, 1.0};
@@ -32,6 +36,16 @@ write_color :: proc(pixel_color : Color) {
     ib := u8(255.999*b)
 
     fmt.printf("{0} {1} {2}\n", ir, ig, ib)
+}
+
+hit_sphere :: proc(center : Point3, radius : f32, r: Ray) -> bool {
+    oc := center - r.origin   
+    a := la.vector_dot(r.direction, r.direction)
+    b := -2.0 * la.vector_dot(r.direction, oc)
+    c := la.vector_dot(oc, oc) - radius*radius
+    discriminant := b*b - 4*a*c
+
+    return discriminant >= 0
 }
 
 main :: proc() {
