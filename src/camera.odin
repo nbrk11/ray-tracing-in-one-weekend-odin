@@ -5,9 +5,6 @@ import "core:math"
 import rand"core:math/rand"
 import la"core:math/linalg"
 
-Vec3 :: [3]f32
-Point3 :: Vec3
-
 Camera :: struct {
     aspect_ratio: f32,
     image_width: i32,
@@ -22,7 +19,9 @@ Camera :: struct {
 ray_color :: proc(r: Ray, world: []Hittable) -> Color {
     hit_record : HitRecord
     if hittable_array_hit(world, r, Interval{0, math.INF_F32}, &hit_record) {
-        return 0.5*(hit_record.normal + Color{1,1,1})
+        direction := vec3_random_on_hemisphere(hit_record.normal)
+        return 0.5*ray_color(Ray{r.origin, direction}, world)
+        // return 0.5*(hit_record.normal + Color{1,1,1})
     }
 
     unit_direction := la.vector_normalize(r.direction)
