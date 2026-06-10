@@ -21,3 +21,9 @@ interval_contains :: proc(i: Interval, x: f32) -> bool {
 interval_surrounds :: proc(i: Interval, x: f32) -> bool {
     return i.min < x && i.max > x
 }
+
+interval_clamp :: proc(i: Interval, x: f32) -> f32 {
+    if x > i.max { return i.max }
+    if x < i.min { return i.min }
+    return x
+}
