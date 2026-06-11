@@ -10,18 +10,22 @@ Camera :: struct {
     image_width: i32,
     image_height: i32,
     samples_per_pixel: i32,
+    max_depth: i32,
     center: Point3,
     pixel00_loc: Point3,
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3
 }
 
-camera_ray_color :: proc(r: Ray, world: []Hittable) -> Color {
+camera_ray_color :: proc(r: Ray, depth: i32, world: []Hittable) -> Color {
+    if depth <= 0 {
+        return Color{0,0,0}
+    }
+
     rec : HitRecord
     if hittable_array_hit(world, r, Interval{0, math.INF_F32}, &rec) {
         direction := vec3_random_on_hemisphere(rec.normal)
-        return 0.5*camera_ray_color(Ray{rec.p, direction}, world)
-        // return 0.5*(hit_record.normal + Color{1,1,1})
+        return 0.8*camera_ray_color(Ray{rec.p, direction}, depth-1, world)
     }
 
     unit_direction := la.vector_normalize(r.direction)
@@ -41,7 +45,7 @@ camera_render :: proc(camera: ^Camera, world: []Hittable) {
             pixel_color := Color{0,0,0}
             for sample := 0; sample < int(camera.samples_per_pixel); sample += 1 {
                 r := camera_get_ray(camera^, i, j)
-                pixel_color += camera_ray_color(r, world)
+                pixel_color += camera_ray_color(r, camera.max_depth, world)
             }
             write_color(camera_get_pixel_samples_scale(camera^) * pixel_color)
         }
