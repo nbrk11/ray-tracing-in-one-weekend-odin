@@ -16,11 +16,11 @@ Camera :: struct {
     pixel_delta_v: Vec3
 }
 
-ray_color :: proc(r: Ray, world: []Hittable) -> Color {
-    hit_record : HitRecord
-    if hittable_array_hit(world, r, Interval{0, math.INF_F32}, &hit_record) {
-        direction := vec3_random_on_hemisphere(hit_record.normal)
-        return 0.5*ray_color(Ray{r.origin, direction}, world)
+camera_ray_color :: proc(r: Ray, world: []Hittable) -> Color {
+    rec : HitRecord
+    if hittable_array_hit(world, r, Interval{0, math.INF_F32}, &rec) {
+        direction := vec3_random_on_hemisphere(rec.normal)
+        return 0.5*camera_ray_color(Ray{rec.p, direction}, world)
         // return 0.5*(hit_record.normal + Color{1,1,1})
     }
 
@@ -41,7 +41,7 @@ camera_render :: proc(camera: ^Camera, world: []Hittable) {
             pixel_color := Color{0,0,0}
             for sample := 0; sample < int(camera.samples_per_pixel); sample += 1 {
                 r := camera_get_ray(camera^, i, j)
-                pixel_color += ray_color(r, world)
+                pixel_color += camera_ray_color(r, world)
             }
             write_color(camera_get_pixel_samples_scale(camera^) * pixel_color)
         }

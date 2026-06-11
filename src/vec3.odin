@@ -17,8 +17,8 @@ vec3_random_range :: proc(min, max: f32) -> Vec3 {
 
 vec3_random_unit :: proc() -> Vec3 {
     for {
-        v := vec3_random_range(-1, 1)
-        lensq := la.vector_length2(v)
+        v := vec3_random_range(-1.0, 1.0)
+        lensq := la.vector_length(v) * la.vector_length(v)
         if 1e-160 < lensq && lensq <= 1 {
             return v / math.sqrt(lensq)
         }
