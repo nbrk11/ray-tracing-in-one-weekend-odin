@@ -24,8 +24,8 @@ camera_ray_color :: proc(r: Ray, depth: i32, world: []Hittable) -> Color {
 
     rec : HitRecord
     if hittable_array_hit(world, r, Interval{0.001, math.INF_F32}, &rec) {
-        direction := vec3_random_on_hemisphere(rec.normal)
-        return 0.8*camera_ray_color(Ray{rec.p, direction}, depth-1, world)
+        direction := rec.normal + vec3_random_unit()
+        return 0.5*camera_ray_color(Ray{rec.p, direction}, depth-1, world)
     }
 
     unit_direction := la.vector_normalize(r.direction)
